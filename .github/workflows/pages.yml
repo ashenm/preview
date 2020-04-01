@@ -1,0 +1,50 @@
+name: Developer Previews
+
+on:
+  - push
+  - pull_request
+
+jobs:
+
+  # fetch sources
+  build:
+    name: Build Pages
+    steps:
+      - uses: actions/checkout@v2
+      - run: make install
+      - run: make build
+      - run: make archive
+      - uses: actions/upload-artifact@v1
+        with:
+          name: previews.txz
+          path: previews.txz
+    runs-on: ubuntu-latest
+
+  # publish gh-pages
+  publish:
+    name: Publish Pages
+    needs: [ build ]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: previews.txz
+          path: /tmp
+      - run: |
+          tar --xz --extract --file /tmp/previews.txz
+          mkdir --parent /tmp/build
+          rsync --delete --recursive ${GITHUB_WORKSPACE:-.}/ /tmp/build
+      - run: |
+          git init
+          git checkout --orphan gh-pages
+          git config user.email "mail@ashenm.ml"
+          git config user.name "Ashen Gunaratne"
+          echo "preview.ashenm.ml" | tee CNAME
+          git add --all .
+          git commit --quiet --message "Deploy preview.ashenm.ml to github.com/ashenm/preview.git:gh-pages"
+          git push --force --quiet "https://${{ secrets.ENDPOINT_TOKEN }}@github.com/ashenm/preview.git" "gh-pages:gh-pages"
+          git show --stat-count=10 HEAD
+        working-directory: /tmp/build
+    runs-on: ubuntu-latest
+
+# vim: set expandtab shiftwidth=2 syntax=yaml:
