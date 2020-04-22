@@ -11,7 +11,7 @@ help: ## list make targets
 build: ## build preview sources
 
 	declare -a _sites
-	source .github/_sites.bash
+	source sites.bash
 
 	for site in "$${_sites[@]}"
 	do
@@ -26,7 +26,7 @@ build: ## build preview sources
 list: ## list all sources
 
 	declare -a _site
-	source .github/_sites.bash
+	source sites.bash
 
 	for site in "$${_sites[@]}"
 	do
@@ -39,7 +39,7 @@ clean: ## clean build artifacts
 
 .PHONY: archive
 archive:
-	tar --xz --create --file previews.txz --exclude Makefile *
+	tar --xz --create --file previews.txz --exclude Makefile --exclude sites.bash *
 
 .PHONY: install
 install:
