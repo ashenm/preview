@@ -1,0 +1,19 @@
+dist:
+  bionic
+
+language:
+  minimal
+
+install:
+  true
+
+script:
+  true
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  fqdn: fifteen.ashenm.ml
+
+# vim: set expandtab shiftwidth=2 syntax=yaml:
