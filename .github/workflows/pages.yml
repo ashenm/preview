@@ -34,6 +34,7 @@ jobs:
           tar --xz --extract --file /tmp/previews.txz
           mkdir --parent /tmp/build
           rsync --delete --recursive ${GITHUB_WORKSPACE:-.}/ /tmp/build
+          touch /tmp/build/.nojekyll
       - run: |
           git init
           git checkout --orphan gh-pages
